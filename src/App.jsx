@@ -12,23 +12,25 @@ import { useState } from 'react'
 */
 
 
-function Square({value, handleClick}){  
-  return <button className='square' onClick={handleClick} > {value} </button>
+function Square({value, onHandleClick}){  
+  return <button className='square' onClick={onHandleClick} > {value} </button>
 }
 
 
-function Board() {
-  const [squares, setSquares] = useState(Array(9).fill(''));
-  const [xIsNext, setXIsNext] = useState(true);
+function Board({xIsNext, squares, onHandlePlay}) {
+  // const [squares, setSquares] = useState(Array(9).fill(''));
+  // const [xIsNext, setXIsNext] = useState(true);
 
   function handleClick(n){
     if(squares[n] || calculateWinner(squares)) return;
 
     const nextSquares = squares.slice(); // <<= copy/duplicate array/immutability
     nextSquares[n] = xIsNext? 'X' : 'O';
-    setSquares(nextSquares); //timpa
-    //console.log(squares);
-    setXIsNext(!xIsNext); //dibalik    
+
+    //setSquares(nextSquares); //timpa
+    //setXIsNext(!xIsNext); //dibalik    
+
+    onHandlePlay(nextSquares)
   }
 
   let status = ''; 
@@ -38,46 +40,53 @@ function Board() {
   }else{
     status = `Next Player: ${xIsNext? 'X' : 'O'}`
   };
-  console.log(status)
+  // console.log(status)
 
   return (
     <>
       <h4>{status}</h4>
       <div className='board'>
-        <Square value={squares[0]} handleClick={ () => handleClick(0)} /> {/*perlu dibungkus dg anonymus func*/}
-        <Square value={squares[1]} handleClick={ () => handleClick(1)} />
-        <Square value={squares[2]} handleClick={ () => handleClick(2)} />
-        <Square value={squares[3]} handleClick={ () => handleClick(3)} />
-        <Square value={squares[4]} handleClick={ () => handleClick(4)} />
-        <Square value={squares[5]} handleClick={ () => handleClick(5)} />
-        <Square value={squares[6]} handleClick={ () => handleClick(6)} />
-        <Square value={squares[7]} handleClick={ () => handleClick(7)} />
-        <Square value={squares[8]} handleClick={ () => handleClick(8)} />
+        <Square value={squares[0]} onHandleClick={ () => handleClick(0)} onHandlePlay={onHandlePlay} /> {/*perlu dibungkus dg anonymus func*/}
+        <Square value={squares[1]} onHandleClick={ () => handleClick(1)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[2]} onHandleClick={ () => handleClick(2)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[3]} onHandleClick={ () => handleClick(3)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[4]} onHandleClick={ () => handleClick(4)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[5]} onHandleClick={ () => handleClick(5)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[6]} onHandleClick={ () => handleClick(6)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[7]} onHandleClick={ () => handleClick(7)} onHandlePlay={onHandlePlay} />
+        <Square value={squares[8]} onHandleClick={ () => handleClick(8)} onHandlePlay={onHandlePlay} />
       </div>
     </>
   );
 }
 
 
+// mengelola/menyimpan keadaan dari board
 export default function Game(){
   const [xIsNext, setXIsNext] = useState(true);
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [history, setHistory] = useState( [Array(9).fill(null)] );
   const currentSquare = history[history.length - 1]; //ambil index terakhir
 
-  function handlePlay(){
+  function handlePlay(arr){
+    setHistory( [...history, arr] ); //copy + add
+    setXIsNext(!xIsNext);
+
 
   }
 
+  const moves = history.map( (el,i) => {
+    
+  } );
+
   return(
-    <>
-      <div>
-        {/*3 props*/}
-        <Board  xIsNext={xIsNext} squares={currentSquare} onPlay={handlePlay}  /> 
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={history} onHandlePlay={handlePlay} /> 
       </div>
-      <div>
-        <ol>{/*TO DO*/}</ol>
+      <div className="game-info">
+        <ol>{/*to do*/}</ol>
       </div>
-    </>
+    </div>
     );
 }
 
